@@ -1,64 +1,113 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { authService } from '../api/services';
 
-const AuthContext = createContext();
+const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(() => {
-    const stored = localStorage.getItem('user');
-    return stored ? JSON.parse(stored) : null;
-  });
+  const [user,    setUser]    = useState(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [error,   setError]   = useState('');
 
-  const login = async (email, password) => {
-    setLoading(true);
-    setError(null);
+  /* restore session on mount */
+  useEffect(() => {
     try {
-      const { data } = await authService.login({ email, password });
-      setUser(data);
-      localStorage.setItem('user', JSON.stringify(data));
-      return data;
-    } catch (err) {
-      const msg = err.response?.data?.message || 'Login failed';
-      setError(msg);
-      throw new Error(msg);
-    } finally {
-      setLoading(false);
-    }
+      const stored = localStorage.getItem('ecom_user');
+      if (stored) setUser(JSON.parse(stored));
+    } catch { localStorage.removeItem('ecom_user'); }
+  }, []);
+
+  const saveUser = (data) => {
+    localStorage.setItem('ecom_user', JSON.stringify(data));
+    setUser(data);
   };
 
+  /* ── register ── */
   const register = async (name, email, password) => {
     setLoading(true);
-    setError(null);
+    setError('');
     try {
-      const { data } = await authService.register({ name, email, password });
-      setUser(data);
-      localStorage.setItem('user', JSON.stringify(data));
+      const res  = await fetch(`${API}/api/auth/register`, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ name, email, password }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Registration failed');
+      saveUser(data);
       return data;
     } catch (err) {
-      const msg = err.response?.data?.message || 'Registration failed';
-      setError(msg);
-      throw new Error(msg);
+      setError(err.message);
+      throw err;
     } finally {
       setLoading(false);
     }
   };
 
+  /* ── login ── */
+  const login = async (email, password) => {
+    setLoading(true);
+    setError('');
+    try {
+      const res  = await fetch(`${API}/api/auth/login`, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ email, password }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Login failed');
+      saveUser(data);
+      return data;
+    } catch (err) {
+      setError(err.message);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  /* ── logout ── */
   const logout = () => {
+    localStorage.removeItem('ecom_user');
     setUser(null);
-    localStorage.removeItem('user');
+    setError('');
+  };
+
+  /* ── update profile ── */
+  const updateProfile = async (updates) => {
+    setLoading(true);
+    setError('');
+    try {
+      const res  = await fetch(`${API}/api/auth/profile`, {
+        method:  'PUT',
+        headers: {
+          'Content-Type':  'application/json',
+          'Authorization': `Bearer ${user?.token}`,
+        },
+        body: JSON.stringify(updates),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Update failed');
+      saveUser(data);
+      return data;
+    } catch (err) {
+      setError(err.message);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, error, login, register, logout }}>
+    <AuthContext.Provider value={{ user, loading, error, register, login, logout, updateProfile }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
 export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) throw new Error('useAuth must be used within AuthProvider');
-  return context;
+  const ctx = useContext(AuthContext);
+  if (!ctx) throw new Error('useAuth must be used within AuthProvider');
+  return ctx;
 };
+
+export default AuthContext;
