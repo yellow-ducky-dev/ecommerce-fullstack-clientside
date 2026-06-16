@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Eye, EyeOff, Mail, Lock, LogIn } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+
 
 const Login = () => {
   const navigate = useNavigate();
@@ -9,13 +10,15 @@ const Login = () => {
   const [form, setForm]           = useState({ email: '', password: '' });
   const [showPass, setShowPass]   = useState(false);
   const [formError, setFormError] = useState('');
+  const location = useLocation();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setFormError('');
     try {
       await login(form.email, form.password);
-      navigate('/');
+      const from = location.state?.from || '/';
+      navigate(from);
     } catch (err) { setFormError(err.message); }
   };
 

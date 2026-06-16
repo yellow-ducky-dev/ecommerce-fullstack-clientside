@@ -9,7 +9,7 @@ const cartReducer = (state, action) => {
         (item) => item._id === action.payload._id
       );
       const items = existingItem
-        ? state.items.map((item) =>
+        ? state.items.map((item) => 
             item._id === action.payload._id
               ? { ...item, qty: item.qty + (action.payload.qty || 1) }
               : item

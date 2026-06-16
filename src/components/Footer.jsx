@@ -140,13 +140,18 @@ const Footer = () => {
 
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px 24px', alignItems: 'center' }}>
             <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)', fontWeight: 600 }}>© 2026 E-Commerce Premium. All rights reserved.</span>
-            {['Privacy Policy', 'Terms of Service', 'Cookies Settings'].map(label => (
-              <a key={label} href="#"
-                style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)', textDecoration: 'none', fontWeight: 600, transition: 'color 0.15s' }}
-                onMouseEnter={e => e.currentTarget.style.color = '#fff'} onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.25)'}>
-                {label}
-              </a>
-            ))}
+            {[
+  { label: 'Privacy Policy',    path: '/privacy-policy' },
+  { label: 'Terms of Service',  path: '/terms-of-service' },
+  { label: 'Cookies Settings',  path: '/cookies-settings' },
+].map(({ label, path }) => (
+  <Link key={label} to={path}
+    style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)', textDecoration: 'none', fontWeight: 600, transition: 'color 0.15s' }}
+    onMouseEnter={e => e.currentTarget.style.color = '#fff'}
+    onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.25)'}>
+    {label}
+  </Link>
+))}
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>

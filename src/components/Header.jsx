@@ -3,7 +3,7 @@ import { Search, User, ShoppingCart, Menu, X, Globe, Mail, Phone, ChevronDown, Z
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { useCurrency } from "../context/CurrencyContext";
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from "../context/AuthContext";
 
 const NAV_LINKS = [
   { label: "Home", path: "/" },
@@ -182,7 +182,6 @@ const Header = () => {
                           padding: "8px 14px",
                           fontSize: 12,
                           fontWeight: 600,
-                          color: "#333",
                           cursor: "pointer",
                           background: selected === opt ? "#eff6ff" : "transparent",
                           color: selected === opt ? "#2563eb" : "#333",
@@ -282,31 +281,61 @@ const Header = () => {
             {/* Actions */}
             <div style={{ display: "flex", alignItems: "center", gap: 4, marginLeft: "auto" }}>
               {/* Account */}
-              <Link
-                to="/login"
-                className="hidden sm:flex"
-                style={{
-                  flexDirection: "column",
-                  alignItems: "center",
-                  gap: 3,
-                  padding: "6px 10px",
-                  borderRadius: 10,
-                  textDecoration: "none",
-                  color: "#666",
-                  transition: "background 0.15s, color 0.15s",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = "#f5f7fa";
-                  e.currentTarget.style.color = "#0D6EFD";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = "transparent";
-                  e.currentTarget.style.color = "#666";
-                }}
-              >
-                <User size={22} strokeWidth={1.8} />
-                <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" }}>Account</span>
-              </Link>
+              {user ? (
+                <Link
+                  to="/profile"
+                  className="hidden sm:flex"
+                  style={{
+                    flexDirection: "column",
+                    alignItems: "center",
+                    gap: 3,
+                    padding: "6px 10px",
+                    borderRadius: 10,
+                    textDecoration: "none",
+                    color: "#666",
+                    transition: "background 0.15s, color 0.15s",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = "#f5f7fa";
+                    e.currentTarget.style.color = "#0D6EFD";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = "transparent";
+                    e.currentTarget.style.color = "#666";
+                  }}
+                >
+                  <User size={22} strokeWidth={1.8} />
+                  <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" }}>
+                    {user.name?.split(" ")[0] || "Account"}
+                  </span>
+                </Link>
+              ) : (
+                <Link
+                  to="/login"
+                  className="hidden sm:flex"
+                  style={{
+                    flexDirection: "column",
+                    alignItems: "center",
+                    gap: 3,
+                    padding: "6px 10px",
+                    borderRadius: 10,
+                    textDecoration: "none",
+                    color: "#666",
+                    transition: "background 0.15s, color 0.15s",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = "#f5f7fa";
+                    e.currentTarget.style.color = "#0D6EFD";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = "transparent";
+                    e.currentTarget.style.color = "#666";
+                  }}
+                >
+                  <User size={22} strokeWidth={1.8} />
+                  <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" }}>Account</span>
+                </Link>
+              )}
 
               {/* Cart */}
               <Link
