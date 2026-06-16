@@ -284,7 +284,7 @@ const Header = () => {
               {user ? (
                 <Link
                   to="/profile"
-                  className="hidden sm:flex"
+                  className="flex flex-col items-center sm:flex"
                   style={{
                     flexDirection: "column",
                     alignItems: "center",
