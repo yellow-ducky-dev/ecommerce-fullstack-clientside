@@ -61,143 +61,178 @@ const Header = () => {
       >
         {/* ── Top bar ── */}
         <div
+  style={{
+  background: "#1a1a1a",
+  color: "rgba(255,255,255,0.7)",
+  fontWeight: 300,
+  letterSpacing: "0.01em",
+  maxHeight: scrolled ? 0 : 34,
+  willChange: "max-height",
+  transition: "max-height 0.3s ease",
+  display: "block",
+}}
+className="block text-[7px] md:text-[10px]"
+>
+  <div
+    style={{
+      maxWidth: 1240,
+      margin: "0 auto",
+      padding: "0 16px",
+      height: 36,
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "space-between",
+      gap: 12,
+    }}
+  >
+    {/* LEFT SIDE */}
+    <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+      <a
+        href="mailto:support@brand.com"
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 6,
+          color: "rgba(255,255,255,0.6)",
+          textDecoration: "none",
+          transition: "color 0.15s",
+        }}
+        onMouseEnter={(e) => (e.currentTarget.style.color = "#fff")}
+        onMouseLeave={(e) =>
+          (e.currentTarget.style.color = "rgba(255,255,255,0.6)")
+        }
+      >
+        <Mail size={11} /> support@brand.com
+      </a>
+
+      <a
+        href="tel:+12345678"
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 6,
+          color: "rgba(255,255,255,0.6)",
+          textDecoration: "none",
+          transition: "color 0.15s",
+        }}
+        onMouseEnter={(e) => (e.currentTarget.style.color = "#fff")}
+        onMouseLeave={(e) =>
+          (e.currentTarget.style.color = "rgba(255,255,255,0.6)")
+        }
+      >
+        <Phone size={11} /> +1 (234) 567-890
+      </a>
+    </div>
+
+    {/* RIGHT SIDE */}
+    <div
+      style={{
+        display: "flex",
+        gap: 12,
+        alignItems: "center",
+        flexWrap: "wrap",
+      }}
+    >
+      <Link
+        to="/products"
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 5,
+          color: "rgba(255,255,255,0.6)",
+          textDecoration: "none",
+          transition: "color 0.15s",
+        }}
+        onMouseEnter={(e) => (e.currentTarget.style.color = "#fff")}
+        onMouseLeave={(e) =>
+          (e.currentTarget.style.color = "rgba(255,255,255,0.6)")
+        }
+      >
+        <Zap size={11} /> Flash Deals
+      </Link>
+
+      <Link
+        to="/products"
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 5,
+          color: "rgba(255,255,255,0.6)",
+          textDecoration: "none",
+          transition: "color 0.15s",
+        }}
+        onMouseEnter={(e) => (e.currentTarget.style.color = "#fff")}
+        onMouseLeave={(e) =>
+          (e.currentTarget.style.color = "rgba(255,255,255,0.6)")
+        }
+      >
+        <Package size={11} /> Track Order
+      </Link>
+
+      {/* LANGUAGE DROPDOWN */}
+      <div style={{ position: "relative" }}>
+        <span
+          onClick={() => setShowLangMenu((p) => !p)}
           style={{
-            background: "#1a1a1a",
-            color: "rgba(255,255,255,0.7)",
-            fontSize: 11,
-            fontWeight: 600,
-            letterSpacing: "0.04em",
-            maxHeight: scrolled ? 0 : 36,
-            willChange: "max-height",
-            transition: "max-height 0.3s ease",
-            display: "block",
+            display: "flex",
+            alignItems: "center",
+            gap: 5,
+            color: "rgba(255,255,255,0.6)",
+            cursor: "pointer",
           }}
-          className="hidden md:block"
         >
+          <Globe size={11} /> {selected} <ChevronDown size={9} />
+        </span>
+
+        {showLangMenu && (
           <div
             style={{
-              maxWidth: 1240,
-              margin: "0 auto",
-              padding: "0 16px",
-              height: 36,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
+              position: "absolute",
+              top: "100%",
+              right: 0,
+              background: "#fff",
+              border: "1px solid #e5e7eb",
+              borderRadius: 8,
+              padding: "4px 0",
+              marginTop: 6,
+              minWidth: 120,
+              zIndex: 200,
+              boxShadow: "0 4px 16px rgba(0,0,0,0.12)",
             }}
           >
-            <div style={{ display: "flex", gap: 24 }}>
-              <a
-                href="mailto:support@brand.com"
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 6,
-                  color: "rgba(255,255,255,0.6)",
-                  textDecoration: "none",
-                  transition: "color 0.15s",
+            {["EN / USD", "EN / GBP", "EN / PKR"].map((opt) => (
+              <div
+                key={opt}
+                onClick={() => {
+                  setSelected(opt);
+                  setShowLangMenu(false);
                 }}
-                onMouseEnter={(e) => (e.currentTarget.style.color = "#fff")}
-                onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.6)")}
-              >
-                <Mail size={11} /> support@brand.com
-              </a>
-              <a
-                href="tel:+12345678"
                 style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 6,
-                  color: "rgba(255,255,255,0.6)",
-                  textDecoration: "none",
-                  transition: "color 0.15s",
+                  padding: "8px 14px",
+                  fontSize: 12,
+                  fontWeight: 600,
+                  cursor: "pointer",
+                  background:
+                    selected === opt ? "#eff6ff" : "transparent",
+                  color: selected === opt ? "#2563eb" : "#333",
                 }}
-                onMouseEnter={(e) => (e.currentTarget.style.color = "#fff")}
-                onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.6)")}
+                onMouseEnter={(e) =>
+                  (e.currentTarget.style.background = "#f9fafb")
+                }
+                onMouseLeave={(e) =>
+                  (e.currentTarget.style.background =
+                    selected === opt ? "#eff6ff" : "transparent")
+                }
               >
-                <Phone size={11} /> +1 (234) 567-890
-              </a>
-            </div>
-            <div style={{ display: "flex", gap: 24, alignItems: "center" }}>
-              <Link
-                to="/products"
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 5,
-                  color: "rgba(255,255,255,0.6)",
-                  textDecoration: "none",
-                  transition: "color 0.15s",
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.color = "#fff")}
-                onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.6)")}
-              >
-                <Zap size={11} /> Flash Deals
-              </Link>
-              <Link
-                to="/products"
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 5,
-                  color: "rgba(255,255,255,0.6)",
-                  textDecoration: "none",
-                  transition: "color 0.15s",
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.color = "#fff")}
-                onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.6)")}
-              >
-                <Package size={11} /> Track Order
-              </Link>
-              <div style={{ position: "relative" }}>
-                <span
-                  onClick={() => setShowLangMenu((p) => !p)}
-                  style={{ display: "flex", alignItems: "center", gap: 5, color: "rgba(255,255,255,0.6)", cursor: "pointer" }}
-                >
-                  <Globe size={11} /> {selected} <ChevronDown size={9} />
-                </span>
-                {showLangMenu && (
-                  <div
-                    style={{
-                      position: "absolute",
-                      top: "100%",
-                      right: 0,
-                      background: "#fff",
-                      border: "1px solid #e5e7eb",
-                      borderRadius: 8,
-                      padding: "4px 0",
-                      marginTop: 6,
-                      minWidth: 120,
-                      zIndex: 200,
-                      boxShadow: "0 4px 16px rgba(0,0,0,0.12)",
-                    }}
-                  >
-                    {["EN / USD", "EN / GBP", "EN / PKR"].map((opt) => (
-                      <div
-                        key={opt}
-                        onClick={() => {
-                          setSelected(opt);
-                          setShowLangMenu(false);
-                        }}
-                        style={{
-                          padding: "8px 14px",
-                          fontSize: 12,
-                          fontWeight: 600,
-                          cursor: "pointer",
-                          background: selected === opt ? "#eff6ff" : "transparent",
-                          color: selected === opt ? "#2563eb" : "#333",
-                        }}
-                        onMouseEnter={(e) => (e.currentTarget.style.background = "#f9fafb")}
-                        onMouseLeave={(e) => (e.currentTarget.style.background = selected === opt ? "#eff6ff" : "transparent")}
-                      >
-                        {opt}
-                      </div>
-                    ))}
-                  </div>
-                )}
+                {opt}
               </div>
-            </div>
+            ))}
           </div>
-        </div>
+        )}
+      </div>
+    </div>
+  </div>
+</div>
 
         {/* ── Main header ── */}
         <div style={{ maxWidth: 1240, margin: "0 auto", padding: "0 16px" }}>
