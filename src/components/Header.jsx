@@ -11,6 +11,7 @@ const NAV_LINKS = [
   { label: "Collections", path: "/collections" },
   { label: "Sale", path: "/sale" },
   { label: "New Arrivals", path: "/new-arrivals" },
+  { label: "Orders", path: "/orders" },
 ];
 
 const Header = () => {

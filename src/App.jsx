@@ -22,6 +22,7 @@ import CookiesSettings from "./pages/CookiesSettings";
 import { CookieProvider } from "./context/CookieContext";
 import CookieBanner from "./components/CookieBanner";
 import Checkout from "./pages/Checkout";
+import Orders from "./pages/Orders";
 
 import { Navigate } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
@@ -59,6 +60,7 @@ function App() {
                     <Route path="/cookies-settings" element={<CookiesSettings />} />
                     <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
                     <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+                    <Route path="/orders" element={<ProtectedRoute><Orders /></ProtectedRoute>} />
                   </Routes>
                 </main>
                 <Footer />
