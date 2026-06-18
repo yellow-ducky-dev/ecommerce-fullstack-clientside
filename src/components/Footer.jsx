@@ -157,7 +157,7 @@ const Footer = () => {
           <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
             {/* Made with love */}
             <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', gap: 4, fontWeight: 600 }}>
-              Made with <Heart size={10} style={{ color: '#ef4444', fill: '#ef4444' }} /> Raja Sikandar Team
+              Made with <Heart size={10} style={{ color: '#0d5eaf', fill: '#0d5eaf' }} /> Raja Sikandar Team
             </span>
 
             {/* Region pill */}

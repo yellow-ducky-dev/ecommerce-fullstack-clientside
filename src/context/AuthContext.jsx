@@ -7,6 +7,7 @@ export const AuthProvider = ({ children }) => {
   const [user,    setUser]    = useState(null);
   const [loading, setLoading] = useState(false);
   const [error,   setError]   = useState('');
+  const [authLoaded, setAuthLoaded] = useState(false);
 
   /* restore session on mount */
   useEffect(() => {
@@ -14,6 +15,7 @@ export const AuthProvider = ({ children }) => {
       const stored = localStorage.getItem('ecom_user');
       if (stored) setUser(JSON.parse(stored));
     } catch { localStorage.removeItem('ecom_user'); }
+    finally { setAuthLoaded(true); }
   }, []);
 
   const saveUser = (data) => {
@@ -98,7 +100,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, error, register, login, logout, updateProfile }}>
+    <AuthContext.Provider value={{ user, loading, error, authLoaded, register, login, logout, updateProfile }}>
       {children}
     </AuthContext.Provider>
   );

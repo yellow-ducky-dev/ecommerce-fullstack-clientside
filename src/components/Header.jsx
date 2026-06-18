@@ -347,7 +347,7 @@ className="block text-[7px] md:text-[10px]"
                 </Link>
               ) : (
                 <Link
-                  to="/login"
+                  to={user ? '/profile' : '/login'}
                   className="hidden sm:flex"
                   style={{
                     flexDirection: "column",

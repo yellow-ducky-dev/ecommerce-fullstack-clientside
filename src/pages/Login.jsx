@@ -62,13 +62,13 @@ const Login = () => {
           )}
 
           {/* Demo credentials */}
-          <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', color: '#2563eb',
+          {/* <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', color: '#2563eb',
             fontSize: 12, borderRadius: 10, padding: '10px 14px', marginBottom: 20,
             lineHeight: 1.7 }}>
             <strong>Demo accounts:</strong><br />
             Admin: admin@ecommerce.com / Admin@1234<br />
             User: john@example.com / John@1234
-          </div>
+          </div> */}
 
           {/* Form */}
           <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
