@@ -8,6 +8,7 @@ import {
 import { productService } from '../api/services';
 import { useCart } from '../context/CartContext';
 import { useCurrency } from '../context/CurrencyContext';
+import { showToast } from '../helper/toast';
 
 /* ─── Static data ─────────────────────────────────────────────── */
 const CATEGORIES = [
@@ -198,7 +199,7 @@ const ProductCard = ({ product, view = 'grid' }) => {
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 'auto' }}>
           <span style={{ fontWeight: 700, color: '#111827', fontSize: 15 }}>{symbol} {convert(product.price)}</span>
           <button
-            onClick={e => { e.preventDefault(); handleAdd(); }}
+            onClick={e => { e.preventDefault(); handleAdd(); showToast.success("Item Added to Cart") }}
             style={{ width: 32, height: 32, borderRadius: 8, border: 'none', cursor: 'pointer',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               background: added ? '#16a34a' : '#eff6ff', color: added ? '#fff' : '#2563eb',

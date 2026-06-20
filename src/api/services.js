@@ -53,3 +53,16 @@ export const orderService = {
   getAllOrders: () =>
     api.get('/api/orders'),
 };
+
+// Admin Services
+export const adminService = {
+  // Orders
+  getAllOrders:   ()         => api.get('/api/orders'),
+  updateStatus:  (id, status) => api.put(`/api/orders/${id}/status`, { status }),
+
+  // Users
+  getAllUsers:   ()   => api.get('/api/auth/users'),
+  deleteUser:   (id) => api.delete(`/api/auth/users/${id}`),
+
+  // Products (already exist in productService)
+};

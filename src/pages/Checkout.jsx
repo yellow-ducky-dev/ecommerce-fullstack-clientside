@@ -4,6 +4,7 @@ import { CreditCard, Truck, ShieldCheck, ChevronRight, MapPin, User, Mail, Phone
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
 import { useCurrency } from "../context/CurrencyContext";
+import { showToast } from "../helper/toast";
 
 const FALLBACK =
   "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Crect fill='%23f3f4f6' width='200' height='200'/%3E%3C/svg%3E";
@@ -121,10 +122,11 @@ const Checkout = () => {
     const data = await res.json();
     if (!res.ok) throw new Error(data.message || 'Order failed');
 
+    showToast.success("Payment Successful")
     clearCart();
     setDone(true);
   } catch (err) {
-    alert(err.message || 'Failed to place order. Please try again.');
+    showToast.error(err.message || 'Failed to place order. Please try again.');
   } finally {
     setPlacing(false);
   }
@@ -664,7 +666,7 @@ const Checkout = () => {
                   Back
                 </button>
                 <button
-                  onClick={() => setStep(2)}
+                  onClick={() => {setStep(2); showToast.success("Payment Added")}}
                   style={{
                     flex: 2,
                     padding: "12px",

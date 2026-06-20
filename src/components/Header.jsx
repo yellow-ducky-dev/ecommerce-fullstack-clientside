@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Search, User, ShoppingCart, Menu, X, Globe, Mail, Phone, ChevronDown, Zap, Package } from "lucide-react";
+import { Search, User, ShoppingCart, Menu, X, Globe, Mail, Phone, ChevronDown, Zap, Package, ShieldCheck } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { useCurrency } from "../context/CurrencyContext";
@@ -62,178 +62,164 @@ const Header = () => {
       >
         {/* ── Top bar ── */}
         <div
-  style={{
-  background: "#1a1a1a",
-  color: "rgba(255,255,255,0.7)",
-  fontWeight: 300,
-  letterSpacing: "0.01em",
-  maxHeight: scrolled ? 0 : 34,
-  willChange: "max-height",
-  transition: "max-height 0.3s ease",
-  display: "block",
-}}
-className="block text-[7px] md:text-[10px]"
->
-  <div
-    style={{
-      maxWidth: 1240,
-      margin: "0 auto",
-      padding: "0 16px",
-      height: 36,
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "space-between",
-      gap: 12,
-    }}
-  >
-    {/* LEFT SIDE */}
-    <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-      <a
-        href="mailto:support@brand.com"
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: 6,
-          color: "rgba(255,255,255,0.6)",
-          textDecoration: "none",
-          transition: "color 0.15s",
-        }}
-        onMouseEnter={(e) => (e.currentTarget.style.color = "#fff")}
-        onMouseLeave={(e) =>
-          (e.currentTarget.style.color = "rgba(255,255,255,0.6)")
-        }
-      >
-        <Mail size={11} /> support@brand.com
-      </a>
-
-      <a
-        href="tel:+12345678"
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: 6,
-          color: "rgba(255,255,255,0.6)",
-          textDecoration: "none",
-          transition: "color 0.15s",
-        }}
-        onMouseEnter={(e) => (e.currentTarget.style.color = "#fff")}
-        onMouseLeave={(e) =>
-          (e.currentTarget.style.color = "rgba(255,255,255,0.6)")
-        }
-      >
-        <Phone size={11} /> +1 (234) 567-890
-      </a>
-    </div>
-
-    {/* RIGHT SIDE */}
-    <div
-      style={{
-        display: "flex",
-        gap: 12,
-        alignItems: "center",
-        flexWrap: "wrap",
-      }}
-    >
-      <Link
-        to="/products"
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: 5,
-          color: "rgba(255,255,255,0.6)",
-          textDecoration: "none",
-          transition: "color 0.15s",
-        }}
-        onMouseEnter={(e) => (e.currentTarget.style.color = "#fff")}
-        onMouseLeave={(e) =>
-          (e.currentTarget.style.color = "rgba(255,255,255,0.6)")
-        }
-      >
-        <Zap size={11} /> Flash Deals
-      </Link>
-
-      <Link
-        to="/products"
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: 5,
-          color: "rgba(255,255,255,0.6)",
-          textDecoration: "none",
-          transition: "color 0.15s",
-        }}
-        onMouseEnter={(e) => (e.currentTarget.style.color = "#fff")}
-        onMouseLeave={(e) =>
-          (e.currentTarget.style.color = "rgba(255,255,255,0.6)")
-        }
-      >
-        <Package size={11} /> Track Order
-      </Link>
-
-      {/* LANGUAGE DROPDOWN */}
-      <div style={{ position: "relative" }}>
-        <span
-          onClick={() => setShowLangMenu((p) => !p)}
           style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 5,
-            color: "rgba(255,255,255,0.6)",
-            cursor: "pointer",
+            background: "#1a1a1a",
+            color: "rgba(255,255,255,0.7)",
+            fontWeight: 300,
+            letterSpacing: "0.01em",
+            maxHeight: scrolled ? 0 : 34,
+            willChange: "max-height",
+            transition: "max-height 0.3s ease",
+            display: "block",
           }}
+          className="block text-[7px] md:text-[10px]"
         >
-          <Globe size={11} /> {selected} <ChevronDown size={9} />
-        </span>
-
-        {showLangMenu && (
           <div
             style={{
-              position: "absolute",
-              top: "100%",
-              right: 0,
-              background: "#fff",
-              border: "1px solid #e5e7eb",
-              borderRadius: 8,
-              padding: "4px 0",
-              marginTop: 6,
-              minWidth: 120,
-              zIndex: 200,
-              boxShadow: "0 4px 16px rgba(0,0,0,0.12)",
+              maxWidth: 1240,
+              margin: "0 auto",
+              padding: "0 16px",
+              height: 36,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              gap: 12,
             }}
           >
-            {["EN / USD", "EN / GBP", "EN / PKR"].map((opt) => (
-              <div
-                key={opt}
-                onClick={() => {
-                  setSelected(opt);
-                  setShowLangMenu(false);
-                }}
+            {/* LEFT SIDE */}
+            <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+              <a
+                href="mailto:support@brand.com"
                 style={{
-                  padding: "8px 14px",
-                  fontSize: 12,
-                  fontWeight: 600,
-                  cursor: "pointer",
-                  background:
-                    selected === opt ? "#eff6ff" : "transparent",
-                  color: selected === opt ? "#2563eb" : "#333",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 6,
+                  color: "rgba(255,255,255,0.6)",
+                  textDecoration: "none",
+                  transition: "color 0.15s",
                 }}
-                onMouseEnter={(e) =>
-                  (e.currentTarget.style.background = "#f9fafb")
-                }
-                onMouseLeave={(e) =>
-                  (e.currentTarget.style.background =
-                    selected === opt ? "#eff6ff" : "transparent")
-                }
+                onMouseEnter={(e) => (e.currentTarget.style.color = "#fff")}
+                onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.6)")}
               >
-                {opt}
+                <Mail size={11} /> support@brand.com
+              </a>
+
+              <a
+                href="tel:+12345678"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 6,
+                  color: "rgba(255,255,255,0.6)",
+                  textDecoration: "none",
+                  transition: "color 0.15s",
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.color = "#fff")}
+                onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.6)")}
+              >
+                <Phone size={11} /> +1 (234) 567-890
+              </a>
+            </div>
+
+            {/* RIGHT SIDE */}
+            <div
+              style={{
+                display: "flex",
+                gap: 12,
+                alignItems: "center",
+                flexWrap: "wrap",
+              }}
+            >
+              <Link
+                to="/products"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 5,
+                  color: "rgba(255,255,255,0.6)",
+                  textDecoration: "none",
+                  transition: "color 0.15s",
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.color = "#fff")}
+                onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.6)")}
+              >
+                <Zap size={11} /> Flash Deals
+              </Link>
+
+              <Link
+                to="/products"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 5,
+                  color: "rgba(255,255,255,0.6)",
+                  textDecoration: "none",
+                  transition: "color 0.15s",
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.color = "#fff")}
+                onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.6)")}
+              >
+                <Package size={11} /> Track Order
+              </Link>
+
+              {/* LANGUAGE DROPDOWN */}
+              <div style={{ position: "relative" }}>
+                <span
+                  onClick={() => setShowLangMenu((p) => !p)}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 5,
+                    color: "rgba(255,255,255,0.6)",
+                    cursor: "pointer",
+                  }}
+                >
+                  <Globe size={11} /> {selected} <ChevronDown size={9} />
+                </span>
+
+                {showLangMenu && (
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: "100%",
+                      right: 0,
+                      background: "#fff",
+                      border: "1px solid #e5e7eb",
+                      borderRadius: 8,
+                      padding: "4px 0",
+                      marginTop: 6,
+                      minWidth: 120,
+                      zIndex: 200,
+                      boxShadow: "0 4px 16px rgba(0,0,0,0.12)",
+                    }}
+                  >
+                    {["EN / USD", "EN / GBP", "EN / PKR"].map((opt) => (
+                      <div
+                        key={opt}
+                        onClick={() => {
+                          setSelected(opt);
+                          setShowLangMenu(false);
+                        }}
+                        style={{
+                          padding: "8px 14px",
+                          fontSize: 12,
+                          fontWeight: 600,
+                          cursor: "pointer",
+                          background: selected === opt ? "#eff6ff" : "transparent",
+                          color: selected === opt ? "#2563eb" : "#333",
+                        }}
+                        onMouseEnter={(e) => (e.currentTarget.style.background = "#f9fafb")}
+                        onMouseLeave={(e) => (e.currentTarget.style.background = selected === opt ? "#eff6ff" : "transparent")}
+                      >
+                        {opt}
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
-            ))}
+            </div>
           </div>
-        )}
-      </div>
-    </div>
-  </div>
-</div>
+        </div>
 
         {/* ── Main header ── */}
         <div style={{ maxWidth: 1240, margin: "0 auto", padding: "0 16px" }}>
@@ -347,7 +333,7 @@ className="block text-[7px] md:text-[10px]"
                 </Link>
               ) : (
                 <Link
-                  to={user ? '/profile' : '/login'}
+                  to={user ? "/profile" : "/login"}
                   className="hidden sm:flex"
                   style={{
                     flexDirection: "column",
@@ -370,6 +356,33 @@ className="block text-[7px] md:text-[10px]"
                 >
                   <User size={22} strokeWidth={1.8} />
                   <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" }}>Account</span>
+                </Link>
+              )}
+              {user?.isAdmin && (
+                <Link
+                  to="/admin"
+                  style={{
+                    flexDirection: "column",
+                    alignItems: "center",
+                    gap: 3,
+                    padding: "6px 10px",
+                    borderRadius: 10,
+                    textDecoration: "none",
+                    color: "#666",
+                    display: "flex",
+                    transition: "background 0.15s, color 0.15s",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = "#f5f7fa";
+                    e.currentTarget.style.color = "#0D6EFD";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = "transparent";
+                    e.currentTarget.style.color = "#666";
+                  }}
+                >
+                  <ShieldCheck size={22} strokeWidth={1.8} />
+                  <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" }}>Admin</span>
                 </Link>
               )}
 

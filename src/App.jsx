@@ -27,6 +27,15 @@ import Orders from "./pages/Orders";
 import { Navigate } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
 import Profile from './pages/Profile';
+import AdminPanel from './pages/AdminPanel';
+import AddProduct from './pages/AddProduct';
+
+
+const AdminRoute = ({ children }) => {
+  const { user } = useAuth();
+  return user?.isAdmin ? children : <Navigate to="/" replace />;
+};
+
 
 const ProtectedRoute = ({ children }) => {
   const { user } = useAuth();
@@ -61,6 +70,8 @@ function App() {
                     <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
                     <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
                     <Route path="/orders" element={<ProtectedRoute><Orders /></ProtectedRoute>} />
+                    <Route path="/admin" element={<AdminRoute><AdminPanel /></AdminRoute>} />
+                    <Route path="/admin/product/new" element={<AdminRoute><AddProduct /></AdminRoute>} />
                   </Routes>
                 </main>
                 <Footer />

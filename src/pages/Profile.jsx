@@ -109,7 +109,7 @@ const Profile = () => {
   const handleSave = async () => {
     setMessage('');
     if (form.password && form.password !== form.confirmPassword)
-      return alert('Passwords do not match');
+      return showToast.warning('Passwords do not match');
     try {
       setSaving(true);
       const payload = { name: form.name, email: form.email, phone: form.phone, city: form.city };
@@ -117,7 +117,7 @@ const Profile = () => {
       await updateProfile(payload);
       setMessage('Profile updated successfully');
       setForm(p => ({ ...p, password: '', confirmPassword: '' }));
-    } catch (err) { alert(err.message); }
+    } catch (err) { showToast.error(err.message); }
     finally { setSaving(false); }
   };
 

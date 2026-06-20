@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useCurrency } from '../context/CurrencyContext';
+import { showToast } from '../helper/toast';
 
 const FALLBACK = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Crect fill='%23f3f4f6' width='200' height='200'/%3E%3C/svg%3E";
 const onImgError = e => { e.target.onerror = null; e.target.src = FALLBACK; };
@@ -47,6 +48,7 @@ const SaleCard = ({ product }) => {
     e.preventDefault();
     addToCart(product, 1);
     setAdded(true);
+    showToast.success("Item Added to Cart");
     setTimeout(() => setAdded(false), 1400);
   };
 

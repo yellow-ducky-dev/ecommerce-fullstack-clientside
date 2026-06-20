@@ -281,7 +281,7 @@ const Orders = () => {
             )
           );
         } catch (err) {
-          alert(err.message);
+          showToast.error(err.message);
         }
       }}
       style={{
@@ -366,7 +366,7 @@ const Orders = () => {
                           Order Progress
                         </p>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 0 }}>
-                          {['pending', 'processing', 'shipped', 'delivered',"cancelled"].map((s, i) => {
+                          {['pending', 'processing', 'shipped', 'delivered'].map((s, i) => {
                             const cfg = STATUS_CONFIG[s];
                             const Icon = cfg.icon;
                             const steps = ['pending', 'processing', 'shipped', 'delivered'];
@@ -390,6 +390,7 @@ const Orders = () => {
                                     background: i < currentIdx && status !== 'cancelled' ? '#16a34a' : '#e5e7eb',
                                     transition: 'background 0.3s' }} />
                                 )}
+                                
                               </React.Fragment>
                             );
                           })}

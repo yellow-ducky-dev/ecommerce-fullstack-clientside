@@ -19,6 +19,7 @@ import {
 import { productService } from "../api/services";
 import { useCart } from "../context/CartContext";
 import { useCurrency } from '../context/CurrencyContext';
+import { showToast } from "../helper/toast";
 
 
 /* ─── Fallback (matches Home.jsx) ───────────────────────────────────── */
@@ -91,6 +92,7 @@ const ProductDetails = () => {
     if (!product) return;
     addToCart(product, qty);
     setAdded(true);
+    showToast.success("Item Added to Cart")
     setTimeout(() => setAdded(false), 2000);
   };
 
