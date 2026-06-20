@@ -9,6 +9,7 @@ import { productService } from '../api/services';
 import { useCart } from '../context/CartContext';
 import { useCurrency } from '../context/CurrencyContext';
 import { showToast } from '../helper/toast';
+import OptimizedImage from '../components/OptimizedImage'; // Imported our performance-optimized image handler
 
 /* ─── Static data ─────────────────────────────────────────────── */
 const CATEGORIES = [
@@ -24,12 +25,8 @@ const SORT_OPTIONS = [
   { value: 'rating',     label: 'Top Rated' },
 ];
 
-/* ─── Fallback image ──────────────────────────────────────────── */
-const FALLBACK = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Crect fill='%23f3f4f6' width='200' height='200'/%3E%3C/svg%3E";
-const onImgError = e => { e.target.onerror = null; e.target.src = FALLBACK; };
-
 /* ─── Collapsible filter section ─────────────────────────────── */
-const FilterSection = ({ title, children, defaultOpen = true }) => {
+const FilterSection = React.memo(({ title, children, defaultOpen = true }) => {
   const [open, setOpen] = useState(defaultOpen);
   return (
     <div style={{ borderBottom: '1px solid #f0f0f0', padding: '14px 0' }}>
@@ -45,10 +42,10 @@ const FilterSection = ({ title, children, defaultOpen = true }) => {
       {open && <div style={{ marginTop: 12 }}>{children}</div>}
     </div>
   );
-};
+});
 
 /* ─── Skeleton card ──────────────────────────────────────────── */
-const SkeletonCard = ({ list }) => (
+const SkeletonCard = React.memo(({ list }) => (
   list
     ? <div style={{ background: '#fff', borderRadius: 12, border: '1px solid #f0f0f0', padding: 16,
         display: 'flex', gap: 16, animation: 'pulse 1.5s ease-in-out infinite' }}>
@@ -70,10 +67,10 @@ const SkeletonCard = ({ list }) => (
           <div style={{ height: 32, width: 32, background: '#f3f4f6', borderRadius: 8 }} />
         </div>
       </div>
-);
+));
 
-/* ─── Product card ───────────────────────────────────────────── */
-const ProductCard = ({ product, view = 'grid' }) => {
+/* ─── Product card (Memoized + CSS Powered Hovers) ───────────── */
+const ProductCard = React.memo(({ product, view = 'grid' }) => {
   const { addToCart } = useCart();
   const [added, setAdded] = useState(false);
   const { convert, symbol } = useCurrency();
@@ -90,19 +87,20 @@ const ProductCard = ({ product, view = 'grid' }) => {
 
   if (view === 'list') {
     return (
-      <div
+      <div className="product-card-interactive"
         style={{ background: '#fff', borderRadius: 12, border: '1px solid #f0f0f0', padding: 16,
           display: 'flex', gap: 16, transition: 'box-shadow 0.2s, border-color 0.2s' }}
-        onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,0,0.09)'; e.currentTarget.style.borderColor = '#bfdbfe'; }}
-        onMouseLeave={e => { e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.borderColor = '#f0f0f0'; }}
       >
         <Link to={`/product/${product._id}`}
           style={{ width: 120, height: 120, flexShrink: 0, borderRadius: 10, overflow: 'hidden',
             background: '#f9fafb', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <img src={product.image} alt={product.name} onError={onImgError}
-            style={{ maxHeight: '100%', maxWidth: '100%', objectFit: 'contain', transition: 'transform 0.4s' }}
-            onMouseEnter={e => e.target.style.transform = 'scale(1.08)'}
-            onMouseLeave={e => e.target.style.transform = 'scale(1)'} />
+          <OptimizedImage 
+            src={product.image} 
+            alt={product.name} 
+            optWidth={300} // List cards render slightly wider image footprints
+            className="product-img-scale"
+            style={{ maxHeight: '100%', maxWidth: '100%', objectFit: 'contain', transition: 'transform 0.3s ease' }} 
+          />
         </Link>
 
         <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
@@ -127,8 +125,7 @@ const ProductCard = ({ product, view = 'grid' }) => {
             </p>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            marginTop: 12, flexWrap: 'wrap', gap: 8 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 12, flexWrap: 'wrap', justifyContent: 'space-between' }}>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
               <span style={{ fontWeight: 700, fontSize: 18, color: '#111' }}>{symbol} {convert(product.price)}</span>
               {product.originalPrice && (
@@ -145,12 +142,11 @@ const ProductCard = ({ product, view = 'grid' }) => {
             </div>
             <button
               onClick={handleAdd}
+              className={added ? "" : "btn-primary-hover"}
               style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 16px', borderRadius: 8,
                 border: 'none', cursor: 'pointer', fontWeight: 600, fontSize: 12,
                 background: added ? '#16a34a' : '#2563eb', color: '#fff',
                 transition: 'background 0.15s' }}
-              onMouseEnter={e => { if (!added) e.currentTarget.style.background = '#1d4ed8'; }}
-              onMouseLeave={e => { if (!added) e.currentTarget.style.background = added ? '#16a34a' : '#2563eb'; }}
             >
               <ShoppingCart size={13} />
               {added ? 'Added!' : 'Add to cart'}
@@ -164,11 +160,10 @@ const ProductCard = ({ product, view = 'grid' }) => {
   /* grid card */
   return (
     <Link to={`/product/${product._id}`}
+      className="product-card-interactive"
       style={{ background: '#fff', borderRadius: 12, border: '1px solid #f0f0f0', padding: 12,
         display: 'flex', flexDirection: 'column', textDecoration: 'none', position: 'relative',
         transition: 'box-shadow 0.2s, border-color 0.2s' }}
-      onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,0,0.09)'; e.currentTarget.style.borderColor = '#bfdbfe'; }}
-      onMouseLeave={e => { e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.borderColor = '#f0f0f0'; }}
     >
       {discount && (
         <span style={{ position: 'absolute', top: 10, left: 10, zIndex: 1, background: '#ef4444',
@@ -178,10 +173,13 @@ const ProductCard = ({ product, view = 'grid' }) => {
       )}
       <div style={{ position: 'relative', marginBottom: 12, overflow: 'hidden', borderRadius: 8,
         background: '#f9fafb', height: 140, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <img src={product.image} alt={product.name} onError={onImgError}
-          style={{ maxHeight: '100%', maxWidth: '100%', objectFit: 'contain', transition: 'transform 0.4s' }}
-          onMouseEnter={e => e.target.style.transform = 'scale(1.08)'}
-          onMouseLeave={e => e.target.style.transform = 'scale(1)'} />
+        <OptimizedImage 
+          src={product.image} 
+          alt={product.name} 
+          optWidth={240} // Grid views are small, requesting lower image dimension heavily saves data overhead
+          className="product-img-scale"
+          style={{ maxHeight: '100%', maxWidth: '100%', objectFit: 'contain', transition: 'transform 0.3s ease' }} 
+        />
       </div>
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 1, marginBottom: 4 }}>
@@ -200,12 +198,11 @@ const ProductCard = ({ product, view = 'grid' }) => {
           <span style={{ fontWeight: 700, color: '#111827', fontSize: 15 }}>{symbol} {convert(product.price)}</span>
           <button
             onClick={e => { e.preventDefault(); handleAdd(); showToast.success("Item Added to Cart") }}
+            className={added ? "" : "btn-cart-grid-hover"}
             style={{ width: 32, height: 32, borderRadius: 8, border: 'none', cursor: 'pointer',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               background: added ? '#16a34a' : '#eff6ff', color: added ? '#fff' : '#2563eb',
               transition: 'background 0.15s, color 0.15s' }}
-            onMouseEnter={e => { if (!added) { e.currentTarget.style.background = '#2563eb'; e.currentTarget.style.color = '#fff'; } }}
-            onMouseLeave={e => { if (!added) { e.currentTarget.style.background = '#eff6ff'; e.currentTarget.style.color = '#2563eb'; } }}
           >
             <ShoppingCart size={14} />
           </button>
@@ -213,11 +210,10 @@ const ProductCard = ({ product, view = 'grid' }) => {
       </div>
     </Link>
   );
-};
+});
 
 /* shared sidebar content */
-  
-const SidebarContent = ({ onClose, category, updateParam, priceMin, setPriceMin, priceMax, setPriceMax, applyPrice, hasFilters, setSearchParams }) => (
+const SidebarContent = React.memo(({ onClose, category, updateParam, priceMin, setPriceMin, priceMax, setPriceMax, applyPrice, hasFilters, setSearchParams }) => (
     <div>
       <FilterSection title="Category">
         <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
@@ -234,8 +230,7 @@ const SidebarContent = ({ onClose, category, updateParam, priceMin, setPriceMin,
                     background: active ? '#eff6ff' : 'transparent',
                     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                     transition: 'background 0.15s, color 0.15s' }}
-                  onMouseEnter={e => { if (!active) { e.currentTarget.style.background = '#f9fafb'; e.currentTarget.style.color = '#2563eb'; } }}
-                  onMouseLeave={e => { if (!active) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#555'; } }}
+                  className={active ? "" : "btn-sidebar-item-hover"}
                 >
                   <span>{cat}</span>
                   {active && <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#2563eb' }} />}
@@ -302,7 +297,7 @@ const SidebarContent = ({ onClose, category, updateParam, priceMin, setPriceMin,
         </button>
       )}
     </div>
-  );
+));
 
 /* ─── Main page ──────────────────────────────────────────────── */
 const ProductList = () => {
@@ -324,12 +319,12 @@ const ProductList = () => {
   const [priceMin, setPriceMin] = useState(minPrice);
   const [priceMax, setPriceMax] = useState(maxPrice);
 
-  const updateParam = (key, value) => {
+  const updateParam = useCallback((key, value) => {
     const next = new URLSearchParams(searchParams);
     if (value) next.set(key, value); else next.delete(key);
     if (key !== 'page') next.set('page', '1');
     setSearchParams(next);
-  };
+  }, [searchParams, setSearchParams]);
 
   const fetchProducts = useCallback(async () => {
     setLoading(true);
@@ -347,7 +342,7 @@ const ProductList = () => {
       console.error('Failed to fetch products:', err);
     } finally {
       setLoading(false);
-      window.scrollTo(0, 0);
+      window.scrollTo({ top: 0, behavior: 'instant' });
     }
   }, [search, category, sort, page, minPrice, maxPrice]);
 
@@ -381,7 +376,28 @@ const ProductList = () => {
 
   return (
     <>
-      <style>{`@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}`}</style>
+      {/* Consolidated Global Compositor Styles to eliminate JS re-paint lags */}
+      <style>{`
+        @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+        .product-card-interactive:hover {
+          box-shadow: 0 8px 24px rgba(0,0,0,0.09) !important;
+          border-color: #bfdbfe !important;
+        }
+        .product-card-interactive:hover .product-img-scale {
+          transform: scale(1.06) !important;
+        }
+        .btn-primary-hover:hover {
+          background: #1d4ed8 !important;
+        }
+        .btn-cart-grid-hover:hover {
+          background: #2563eb !important;
+          color: #fff !important;
+        }
+        .btn-sidebar-item-hover:hover {
+          background: #f9fafb !important;
+          color: #2563eb !important;
+        }
+      `}</style>
 
       <main style={{ maxWidth: 1240, margin: '0 auto', padding: '24px 16px',
         display: 'flex', flexDirection: 'column', gap: 20 }}>
@@ -505,7 +521,7 @@ const ProductList = () => {
               </div>
             </div>
 
-            {/* Products */}
+            {/* Products Layout container */}
             {loading ? (
               <div style={view === 'grid'
                 ? { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: 16 }

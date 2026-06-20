@@ -6,11 +6,10 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useCurrency } from '../context/CurrencyContext';
+import { showToast } from '../helper/toast';
+import OptimizedImage from '../components/OptimizedImage';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-
-const FALLBACK = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Crect fill='%23f3f4f6' width='200' height='200'/%3E%3C/svg%3E";
-const onImgError = e => { e.target.onerror = null; e.target.src = FALLBACK; };
 
 const STATUS_CONFIG = {
   pending:    { label: 'Pending',    color: '#f97316', bg: '#fff7ed', border: '#fed7aa', icon: Clock },
@@ -20,7 +19,8 @@ const STATUS_CONFIG = {
   cancelled:  { label: 'Cancelled',  color: '#ef4444', bg: '#fef2f2', border: '#fecaca', icon: X },
 };
 
-const StatusBadge = ({ status }) => {
+/* ── Memoized Status Badge ── */
+const StatusBadge = React.memo(({ status }) => {
   const cfg = STATUS_CONFIG[status] || STATUS_CONFIG.pending;
   const Icon = cfg.icon;
   return (
@@ -30,9 +30,10 @@ const StatusBadge = ({ status }) => {
       <Icon size={11} /> {cfg.label}
     </span>
   );
-};
+});
 
-const SkeletonOrder = () => (
+/* ── Memoized Skeleton ── */
+const SkeletonOrder = React.memo(() => (
   <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 16,
     padding: 20, animation: 'pulse 1.5s ease-in-out infinite' }}>
     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
@@ -46,7 +47,7 @@ const SkeletonOrder = () => (
     </div>
     <div style={{ height: 10, width: '40%', background: '#f3f4f6', borderRadius: 4 }} />
   </div>
-);
+));
 
 const Orders = () => {
   const { user } = useAuth();
@@ -101,16 +102,21 @@ const Orders = () => {
 
   return (
     <>
-      <style>{`@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}`}</style>
-      <main style={{ maxWidth: 1240, margin: '0 auto', padding: '24px 16px',
-        display: 'flex', flexDirection: 'column', gap: 20 }}>
+      <style>{`
+        @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+        .bc-link:hover { color: #2563eb !important; }
+        .btn-primary:hover { background: #1d4ed8 !important; }
+        .order-card { transition: box-shadow 0.2s, border-color 0.2s; }
+        .order-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.08) !important; border-color: #bfdbfe !important; }
+        .btn-cancel:hover { background: #dc2626 !important; }
+        .btn-details:hover { background: #f9fafb !important; }
+      `}</style>
+
+      <main style={{ maxWidth: 1240, margin: '0 auto', padding: '24px 16px', display: 'flex', flexDirection: 'column', gap: 20 }}>
 
         {/* Breadcrumb */}
-        <nav style={{ display: 'flex', alignItems: 'center', gap: 6,
-          fontSize: 12, color: '#9ca3af', flexWrap: 'wrap' }}>
-          <Link to="/" style={{ color: '#9ca3af', textDecoration: 'none' }}
-            onMouseEnter={e => e.currentTarget.style.color = '#2563eb'}
-            onMouseLeave={e => e.currentTarget.style.color = '#9ca3af'}>Home</Link>
+        <nav style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: '#9ca3af', flexWrap: 'wrap' }}>
+          <Link to="/" className="bc-link" style={{ color: '#9ca3af', textDecoration: 'none', transition: 'color 0.15s' }}>Home</Link>
           <ChevronRight size={12} />
           <span style={{ color: '#374151', fontWeight: 500 }}>My Orders</span>
         </nav>
@@ -126,11 +132,10 @@ const Orders = () => {
             )}
           </div>
           <Link to="/products"
+            className="btn-primary"
             style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#2563eb',
               color: '#fff', fontWeight: 600, fontSize: 13, padding: '9px 18px',
-              borderRadius: 10, textDecoration: 'none', transition: 'background 0.15s' }}
-            onMouseEnter={e => e.currentTarget.style.background = '#1d4ed8'}
-            onMouseLeave={e => e.currentTarget.style.background = '#2563eb'}>
+              borderRadius: 10, textDecoration: 'none', transition: 'background 0.15s' }}>
             <ShoppingBag size={14} /> Continue Shopping
           </Link>
         </div>
@@ -180,8 +185,9 @@ const Orders = () => {
               {filter === 'all' ? 'Your order history will appear here.' : `You have no ${filter} orders.`}
             </p>
             <Link to="/products"
+              className="btn-primary"
               style={{ background: '#2563eb', color: '#fff', fontWeight: 600, fontSize: 13,
-                padding: '10px 24px', borderRadius: 8, textDecoration: 'none' }}>
+                padding: '10px 24px', borderRadius: 8, textDecoration: 'none', transition: 'background 0.15s' }}>
               Start Shopping
             </Link>
           </div>
@@ -199,11 +205,9 @@ const Orders = () => {
 
               return (
                 <div key={order._id}
+                  className="order-card"
                   style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 16,
-                    overflow: 'hidden', boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
-                    transition: 'box-shadow 0.2s, border-color 0.2s' }}
-                  onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.08)'; e.currentTarget.style.borderColor = '#bfdbfe'; }}
-                  onMouseLeave={e => { e.currentTarget.style.boxShadow = '0 1px 4px rgba(0,0,0,0.06)'; e.currentTarget.style.borderColor = '#e5e7eb'; }}>
+                    overflow: 'hidden', boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}>
 
                   {/* Order header */}
                   <div style={{ padding: '16px 20px', display: 'flex', alignItems: 'center',
@@ -251,82 +255,42 @@ const Orders = () => {
 
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
 
-  <StatusBadge status={status} />
+                      <StatusBadge status={status} />
 
-  {status === "pending" && (
-    <button
-      onClick={async () => {
-        if (!window.confirm("Cancel this order?")) return;
+                      {status === "pending" && (
+                        <button
+                          className="btn-cancel"
+                          onClick={async () => {
+                            if (!window.confirm("Cancel this order?")) return;
+                            try {
+                              const res = await fetch(`${API}/api/orders/${order._id}/cancel`, {
+                                method: "PUT",
+                                headers: { Authorization: `Bearer ${user.token}` },
+                              });
+                              const data = await res.json();
+                              if (!res.ok) throw new Error(data.message);
 
-        try {
-          const res = await fetch(
-            `${API}/api/orders/${order._id}/cancel`,
-            {
-              method: "PUT",
-              headers: {
-                Authorization: `Bearer ${user.token}`,
-              },
-            }
-          );
+                              setOrders(prev => prev.map(o => o._id === order._id ? { ...o, status: "cancelled" } : o));
+                            } catch (err) {
+                              showToast.error(err.message);
+                            }
+                          }}
+                          style={{ background: "#ef4444", color: "#fff", border: "none", borderRadius: 8, padding: "6px 12px", fontSize: 12, fontWeight: 600, cursor: "pointer", transition: "background 0.15s" }}
+                        >
+                          Cancel
+                        </button>
+                      )}
 
-          const data = await res.json();
+                      <button
+                        className="btn-details"
+                        onClick={() => setExpanded(isOpen ? null : order._id)}
+                        style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '6px 12px', borderRadius: 8, border: '1px solid #e5e7eb', background: '#fff', fontSize: 12, fontWeight: 600, color: '#555', cursor: 'pointer', transition: 'background 0.15s' }}
+                      >
+                        {isOpen ? 'Hide' : 'Details'}
+                        <ChevronRight size={13} style={{ transform: isOpen ? 'rotate(90deg)' : 'none', transition: 'transform 0.2s' }} />
+                      </button>
 
-          if (!res.ok) throw new Error(data.message);
-
-          setOrders(prev =>
-            prev.map(o =>
-              o._id === order._id
-                ? { ...o, status: "cancelled" }
-                : o
-            )
-          );
-        } catch (err) {
-          showToast.error(err.message);
-        }
-      }}
-      style={{
-        background: "#ef4444",
-        color: "#fff",
-        border: "none",
-        borderRadius: 8,
-        padding: "6px 12px",
-        fontSize: 12,
-        fontWeight: 600,
-        cursor: "pointer",
-      }}
-    >
-      Cancel
-    </button>
-  )}
-
-  <button
-    onClick={() => setExpanded(isOpen ? null : order._id)}
-    style={{
-      display: 'flex',
-      alignItems: 'center',
-      gap: 4,
-      padding: '6px 12px',
-      borderRadius: 8,
-      border: '1px solid #e5e7eb',
-      background: '#fff',
-      fontSize: 12,
-      fontWeight: 600,
-      color: '#555',
-      cursor: 'pointer',
-      transition: 'background 0.15s'
-    }}
-  >
-    {isOpen ? 'Hide' : 'Details'}
-    <ChevronRight
-      size={13}
-      style={{
-        transform: isOpen ? 'rotate(90deg)' : 'none',
-        transition: 'transform 0.2s'
-      }}
-    />
-  </button>
-
-</div>
+                    </div>
                   </div>
 
                   {/* Items preview (always visible) */}
@@ -337,8 +301,12 @@ const Orders = () => {
                           <div key={i} style={{ width: 40, height: 40, background: '#f9fafb',
                             borderRadius: 8, border: '1px solid #f0f0f0', overflow: 'hidden',
                             display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                            <img src={item.image} alt={item.name} onError={onImgError}
-                              style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain', padding: 4 }} />
+                            <OptimizedImage 
+                              src={item.image} 
+                              alt={item.name} 
+                              optWidth={80} // Heavily compress tiny thumbnails
+                              style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain', padding: 4 }} 
+                            />
                           </div>
                         ))}
                         {order.orderItems.length > 4 && (
@@ -361,8 +329,7 @@ const Orders = () => {
 
                       {/* Tracking bar */}
                       <div>
-                        <p style={{ fontSize: 11, fontWeight: 700, color: '#9ca3af',
-                          textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 12 }}>
+                        <p style={{ fontSize: 11, fontWeight: 700, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 12 }}>
                           Order Progress
                         </p>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 0 }}>
@@ -375,29 +342,20 @@ const Orders = () => {
                             return (
                               <React.Fragment key={s}>
                                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
-                                  <div style={{ width: 32, height: 32, borderRadius: '50%',
-                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                    background: isDone ? cfg.color : '#f3f4f6',
-                                    border: `2px solid ${isDone ? cfg.color : '#e5e7eb'}`,
-                                    transition: 'all 0.3s' }}>
+                                  <div style={{ width: 32, height: 32, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: isDone ? cfg.color : '#f3f4f6', border: `2px solid ${isDone ? cfg.color : '#e5e7eb'}`, transition: 'all 0.3s' }}>
                                     <Icon size={14} color={isDone ? '#fff' : '#9ca3af'} />
                                   </div>
-                                  <span style={{ fontSize: 10, fontWeight: 700, color: isDone ? cfg.color : '#9ca3af',
-                                    textTransform: 'capitalize', whiteSpace: 'nowrap' }}>{s}</span>
+                                  <span style={{ fontSize: 10, fontWeight: 700, color: isDone ? cfg.color : '#9ca3af', textTransform: 'capitalize', whiteSpace: 'nowrap' }}>{s}</span>
                                 </div>
                                 {i < 3 && (
-                                  <div style={{ flex: 1, height: 2, marginBottom: 18,
-                                    background: i < currentIdx && status !== 'cancelled' ? '#16a34a' : '#e5e7eb',
-                                    transition: 'background 0.3s' }} />
+                                  <div style={{ flex: 1, height: 2, marginBottom: 18, background: i < currentIdx && status !== 'cancelled' ? '#16a34a' : '#e5e7eb', transition: 'background 0.3s' }} />
                                 )}
-                                
                               </React.Fragment>
                             );
                           })}
                         </div>
                         {status === 'cancelled' && (
-                          <div style={{ marginTop: 8, background: '#fef2f2', border: '1px solid #fecaca',
-                            borderRadius: 8, padding: '8px 12px', fontSize: 12, color: '#dc2626', fontWeight: 600 }}>
+                          <div style={{ marginTop: 8, background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 8, padding: '8px 12px', fontSize: 12, color: '#dc2626', fontWeight: 600 }}>
                             This order was cancelled.
                           </div>
                         )}
@@ -405,24 +363,22 @@ const Orders = () => {
 
                       {/* Items list */}
                       <div>
-                        <p style={{ fontSize: 11, fontWeight: 700, color: '#9ca3af',
-                          textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 10 }}>
+                        <p style={{ fontSize: 11, fontWeight: 700, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 10 }}>
                           Items Ordered
                         </p>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                           {order.orderItems.map((item, i) => (
-                            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12,
-                              padding: '10px 12px', background: '#f9fafb', borderRadius: 10,
-                              border: '1px solid #f0f0f0' }}>
-                              <div style={{ width: 48, height: 48, background: '#fff', borderRadius: 8,
-                                border: '1px solid #f0f0f0', overflow: 'hidden', flexShrink: 0,
-                                display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                <img src={item.image} alt={item.name} onError={onImgError}
-                                  style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain', padding: 4 }} />
+                            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 12px', background: '#f9fafb', borderRadius: 10, border: '1px solid #f0f0f0' }}>
+                              <div style={{ width: 48, height: 48, background: '#fff', borderRadius: 8, border: '1px solid #f0f0f0', overflow: 'hidden', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <OptimizedImage 
+                                  src={item.image} 
+                                  alt={item.name} 
+                                  optWidth={120} // Slightly larger for expanded view
+                                  style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain', padding: 4 }} 
+                                />
                               </div>
                               <div style={{ flex: 1, minWidth: 0 }}>
-                                <p style={{ fontSize: 13, fontWeight: 600, color: '#111',
-                                  overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                <p style={{ fontSize: 13, fontWeight: 600, color: '#111', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                                   {item.name}
                                 </p>
                                 <p style={{ fontSize: 11, color: '#9ca3af', marginTop: 2 }}>
@@ -441,12 +397,10 @@ const Orders = () => {
                       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12 }}>
 
                         {/* Shipping address */}
-                        <div style={{ background: '#f9fafb', border: '1px solid #f0f0f0',
-                          borderRadius: 12, padding: 16 }}>
+                        <div style={{ background: '#f9fafb', border: '1px solid #f0f0f0', borderRadius: 12, padding: 16 }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
                             <MapPin size={13} color="#2563eb" />
-                            <p style={{ fontSize: 11, fontWeight: 700, color: '#9ca3af',
-                              textTransform: 'uppercase', letterSpacing: '0.06em' }}>Shipping To</p>
+                            <p style={{ fontSize: 11, fontWeight: 700, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Shipping To</p>
                           </div>
                           <p style={{ fontSize: 13, fontWeight: 600, color: '#374151', lineHeight: 1.6 }}>
                             {order.shippingAddress?.address}<br />
@@ -459,24 +413,21 @@ const Orders = () => {
                         <div style={{ background: '#1f2937', borderRadius: 12, padding: 16 }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
                             <CreditCard size={13} color="#60a5fa" />
-                            <p style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.4)',
-                              textTransform: 'uppercase', letterSpacing: '0.06em' }}>Order Total</p>
+                            <p style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Order Total</p>
                           </div>
                           {[
                             { label: 'Subtotal',  value: `${symbol}${convert(order.itemsPrice)}` },
                             { label: 'Shipping',  value: order.shippingPrice === 0 ? 'FREE' : `${symbol}${convert(order.shippingPrice)}`, green: order.shippingPrice === 0 },
                             { label: 'Tax',       value: `${symbol}${convert(order.taxPrice)}` },
                           ].map(row => (
-                            <div key={row.label} style={{ display: 'flex', justifyContent: 'space-between',
-                              alignItems: 'center', marginBottom: 6 }}>
+                            <div key={row.label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
                               <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', fontWeight: 600 }}>{row.label}</span>
                               <span style={{ fontSize: 12, fontWeight: 700, color: row.green ? '#4ade80' : 'rgba(255,255,255,0.7)' }}>{row.value}</span>
                             </div>
                           ))}
                           <div style={{ height: 1, background: 'rgba(255,255,255,0.08)', margin: '8px 0' }} />
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', fontWeight: 700,
-                              textTransform: 'uppercase', letterSpacing: '0.05em' }}>Total</span>
+                            <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Total</span>
                             <span style={{ fontSize: 16, fontWeight: 900, color: '#fff' }}>
                               {symbol}{convert(order.totalPrice)}
                             </span>
