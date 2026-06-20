@@ -33,7 +33,7 @@ const SERVICES = [
   {
     title: "Fast, reliable shipping",
     icon: Zap,
-    img: "https://unsplash.com/photos/clothing-store-interior-with-racks-of-apparel-VeIViU2Suek",
+    img: "https://images.unsplash.com/photo-1777356363419-1f38e0f05700?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
   },
   {
     title: "Product monitoring",
