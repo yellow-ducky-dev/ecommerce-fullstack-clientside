@@ -5,6 +5,8 @@ import { productService } from "../api/services";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
 import { useCurrency } from "../context/CurrencyContext";
+import { showToast } from "../helper/toast";
+import OptimizedImage from "../components/OptimizedImage"; // Adjust path based on where you saved the component
 
 const CATEGORIES = [
   "Automobiles",
@@ -17,56 +19,28 @@ const CATEGORIES = [
   "Machinery",
 ];
 
-// const DEALS = [
-//   { name: 'Smart watches', discount: '-25%', img: 'https://images.unsplash.com/photo-1546868891-fb45942470c6?w=300&q=80&fit=crop&auto=format' },
-//   { name: 'Laptops',       discount: '-15%', img: 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=300&q=80&fit=crop&auto=format' },
-//   { name: 'GoPro cameras', discount: '-40%', img: 'https://images.unsplash.com/photo-1510127034890-ba27508e9f1c?w=300&q=80&fit=crop&auto=format' },
-//   { name: 'Headphones',    discount: '-25%', img: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300&q=80&fit=crop&auto=format' },
-//   { name: 'Canon cameras', discount: '-25%', img: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=300&q=80&fit=crop&auto=format' },
-// ];
-
-// const HOME_ITEMS = [
-//   { name: 'Soft chairs',    price: '19',  img: 'https://images.unsplash.com/photo-1592078615290-033ee584e267?w=200&q=80&fit=crop&auto=format' },
-//   { name: 'Kitchen dishes', price: '19',  img: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=200&q=80&fit=crop&auto=format' },
-//   { name: 'Home interior',  price: '19',  img: 'https://images.unsplash.com/photo-1484101403633-562f891dc89a?w=200&q=80&fit=crop&auto=format' },
-//   { name: 'Kitchen mixer',  price: '100', img: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=200&q=80&fit=crop&auto=format' },
-//   { name: 'Blenders',       price: '39',  img: 'https://images.unsplash.com/photo-1570222094114-d054a817e56b?w=200&q=80&fit=crop&auto=format' },
-//   { name: 'Home appliance', price: '19',  img: 'https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?w=200&q=80&fit=crop&auto=format' },
-//   { name: 'Coffee maker',   price: '10',  img: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=200&q=80&fit=crop&auto=format' },
-//   { name: 'Luxury sofa',    price: '19',  img: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=200&q=80&fit=crop&auto=format' },
-// ];
-
 const SERVICES = [
   {
     title: "Source from Industry Hubs",
     icon: Archive,
-    img: "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=400&q=80&fit=crop&auto=format",
+    img: "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d",
   },
   {
     title: "Customize Your Products",
     icon: ShoppingCart,
-    img: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=400&q=80&fit=crop&auto=format",
+    img: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d",
   },
   {
     title: "Fast, reliable shipping",
     icon: Zap,
-    img: "https://images.unsplash.com/photo-1566576721346-d4a3b4eaad5b?w=400&q=80&fit=crop&auto=format",
+    img: "https://images.unsplash.com/photo-1566576721346-d4a3b4eaad5b",
   },
   {
     title: "Product monitoring",
     icon: ShieldCheck,
-    img: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&q=80&fit=crop&auto=format",
+    img: "https://images.unsplash.com/photo-1551288049-bebda4e38f71",
   },
 ];
-
-/* ─── Fallback placeholder (data-URI, never breaks) ─────────────────── */
-const FALLBACK =
-  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Crect fill='%23f3f4f6' width='200' height='200'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='12' fill='%239ca3af'%3ENo image%3C/text%3E%3C/svg%3E";
-
-const onImgError = (e) => {
-  e.target.onerror = null;
-  e.target.src = FALLBACK;
-};
 
 /* ─── Skeleton ───────────────────────────────────────────────────────── */
 const SkeletonCard = () => (
@@ -122,13 +96,13 @@ const ProductCard = ({ product }) => {
           justifyContent: "center",
         }}
       >
-        <img
+        <OptimizedImage
           src={product.image}
           alt={product.name}
+          optWidth={250}
           style={{ maxHeight: "100%", maxWidth: "100%", objectFit: "contain", transition: "transform 0.4s" }}
           onMouseEnter={(e) => (e.target.style.transform = "scale(1.08)")}
           onMouseLeave={(e) => (e.target.style.transform = "scale(1)")}
-          onError={onImgError}
         />
         {discount && (
           <span
@@ -183,6 +157,7 @@ const ProductCard = ({ product }) => {
             onClick={(e) => {
               e.preventDefault();
               addToCart(product, 1);
+              showToast.success("Item Added to Cart");
             }}
             style={{
               width: 32,
@@ -225,34 +200,21 @@ const Home = () => {
   const [error, setError] = useState(false);
   const [countdown, setCountdown] = useState({ days: 4, hours: 13, mins: 34, secs: 56 });
 
-// useEffect(() => {
-//   (async () => {
-//     try {
-//       const res = await productService.getProducts({ limit: 12 });
-//       setAllProducts(res.data.products || []);
-//     } catch {
-//       setError(true);
-//     } finally {
-//       setLoading(false);
-//     }
-//   })();
-// }, []);
-
-useEffect(() => {
-  (async () => {
-    try {
-      const [main, featured, home] = await Promise.all([
-        productService.getProducts({ limit: 12 }),
-        productService.getProducts({ featured: 'true', limit: 5 }),
-        productService.getProducts({ category: 'Home interiors', limit: 8 }),
-      ]);
-      setAllProducts(main.data.products || []);
-      setDeals(featured.data.products || []);
-      setHomeItems(home.data.products || []);
-    } catch { setError(true); }
-    finally  { setLoading(false); }
-  })();
-}, []);
+  useEffect(() => {
+    (async () => {
+      try {
+        const [main, featured, home] = await Promise.all([
+          productService.getProducts({ limit: 12 }),
+          productService.getProducts({ featured: 'true', limit: 5 }),
+          productService.getProducts({ category: 'Home interiors', limit: 8 }),
+        ]);
+        setAllProducts(main.data.products || []);
+        setDeals(featured.data.products || []);
+        setHomeItems(home.data.products || []);
+      } catch { setError(true); }
+      finally  { setLoading(false); }
+    })();
+  }, []);
 
   useEffect(() => {
     const id = setInterval(() => {
@@ -280,7 +242,6 @@ useEffect(() => {
 
   return (
     <>
-      {/* pulse keyframe injected once */}
       <style>{`@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}`}</style>
 
       <main style={{ maxWidth: 1240, margin: "0 auto", padding: "24px 16px", display: "flex", flexDirection: "column", gap: 20 }}>
@@ -289,12 +250,12 @@ useEffect(() => {
           style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 16, overflow: "hidden", boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}
         >
           <div style={{ display: "flex", minHeight: 380 }}>
-            {/* Sidebar — hidden below lg via inline media approach: use a className trick */}
+            {/* Sidebar */}
             <div style={{ width: 196, flexShrink: 0, borderRight: "1px solid #f0f0f0" }} className="hidden lg:block">
               <div style={{ padding: "8px 0" }}>
                 {CATEGORIES.map((cat, i) => (
                   <Link
-                    key={i}
+                    key={cat}
                     to={`/products?category=${encodeURIComponent(cat)}`}
                     style={{
                       display: "flex",
@@ -330,11 +291,13 @@ useEffect(() => {
 
             {/* Banner */}
             <div style={{ flex: 1, position: "relative", overflow: "hidden", minHeight: 280 }}>
-              <img
-                src="https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=1200&q=85&fit=crop&auto=format"
+              <OptimizedImage
+                src="https://images.unsplash.com/photo-1620799140408-edc6dcb6d633"
                 alt="Hero banner"
+                optWidth={1200}
+                loading="eager"        // DO NOT lazy load the hero image
+                fetchPriority="high"   // Tell browser to load this first
                 style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", display: "block" }}
-                onError={onImgError}
               />
               <div
                 style={{
@@ -384,7 +347,6 @@ useEffect(() => {
               style={{ width: 204, flexShrink: 0, borderLeft: "1px solid #f0f0f0", padding: 16, display: "flex", flexDirection: "column", gap: 12 }}
               className="hidden xl:flex"
             >
-              {/* Auth card */}
               <div style={{ background: "#eff6ff", borderRadius: 12, padding: 16, display: "flex", flexDirection: "column", gap: 10 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                   <div
@@ -404,7 +366,6 @@ useEffect(() => {
                   <div>
                     <p style={{ fontWeight: 600, fontSize: 13, color: "#111", lineHeight: 1.3 }}>Hi, {user ? user.name : "user"}</p>
                     <p style={{ fontSize: 11, color: "#888" }}>{user ? user.email : "let's get started"}</p>
-                    <p style={{ fontSize: 11, color: "#888" }}>let's get started</p>
                   </div>
                 </div>
                 {user ? (
@@ -464,7 +425,6 @@ useEffect(() => {
                 )}
               </div>
 
-              {/* Promo banners */}
               <div style={{ background: "#f97316", borderRadius: 12, padding: "12px 14px", color: "#fff" }}>
                 <p style={{ fontSize: 12, fontWeight: 600, lineHeight: 1.4 }}>Get US $10 off with a new supplier</p>
               </div>
@@ -525,85 +485,43 @@ useEffect(() => {
               </div>
             </div>
 
-            {/* Deal cards — horizontally scrollable */}
+            {/* Deal cards */}
             <div style={{ flex: 1, overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
               <div style={{ display: "flex", height: "100%" }}>
-                {deals.map((item, i) => {
-  const discount = item.originalPrice
-    ? Math.round(((item.originalPrice - item.price) / item.originalPrice) * 100)
-    : null;
-  return (
-    <Link key={i} to={`/product/${item._id}`}
-      style={{ minWidth: 148, padding: '20px 12px', display: 'flex', flexDirection: 'column',
-        alignItems: 'center', textAlign: 'center', borderRight: '1px solid #f0f0f0',
-        textDecoration: 'none', transition: 'background 0.15s' }}
-      onMouseEnter={e => e.currentTarget.style.background = '#f9fafb'}
-      onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
-      <div style={{ width: 90, height: 90, borderRadius: 10, overflow: 'hidden',
-        marginBottom: 10, background: '#f3f4f6', flexShrink: 0 }}>
-        <img src={item.image} alt={item.name}
-          style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block' }}
-          onError={onImgError} />
-      </div>
-      <span style={{ fontSize: 12, fontWeight: 600, color: '#333', marginBottom: 8,
-        lineHeight: 1.3, display: '-webkit-box', WebkitLineClamp: 2,
-        WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-        {item.name}
-      </span>
-      {discount && (
-        <span style={{ fontSize: 11, fontWeight: 700, color: '#ef4444', background: '#fef2f2',
-          padding: '2px 10px', borderRadius: 99, border: '1px solid #fee2e2' }}>
-          -{discount}%
-        </span>
-      )}
-    </Link>
-  );
-})}
-
-                {/* {DEALS.map((item, i) => (
-                  <Link
-                    key={i}
-                    to="/products"
-                    style={{
-                      minWidth: 148,
-                      padding: "20px 12px",
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "center",
-                      textAlign: "center",
-                      borderRight: "1px solid #f0f0f0",
-                      textDecoration: "none",
-                      transition: "background 0.15s",
-                    }}
-                    onMouseEnter={(e) => (e.currentTarget.style.background = "#f9fafb")}
-                    onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
-                  >
-                    <div
-                      style={{ width: 90, height: 90, borderRadius: 10, overflow: "hidden", marginBottom: 10, background: "#f3f4f6", flexShrink: 0 }}
-                    >
-                      <img
-                        src={item.img}
-                        alt={item.name}
-                        style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
-                        onError={onImgError}
-                      />
-                    </div>
-                    <span style={{ fontSize: 12, fontWeight: 600, color: "#333", marginBottom: 8, lineHeight: 1.3 }}>{item.name}</span>
-                    <span
-                      style={{
-                        fontSize: 11,
-                        fontWeight: 700,
-                        color: "#ef4444",
-                        background: "#fef2f2",
-                        padding: "2px 10px",
-                        borderRadius: 99,
-                        border: "1px solid #fee2e2",
-                      }}
-                    >
-                      {item.discount}
-                    </span>
-                  </Link>
-                ))} */}
+                {deals.map((item) => {
+                  const discount = item.originalPrice
+                    ? Math.round(((item.originalPrice - item.price) / item.originalPrice) * 100)
+                    : null;
+                  return (
+                    <Link key={item._id} to={`/product/${item._id}`}
+                      style={{ minWidth: 148, padding: '20px 12px', display: 'flex', flexDirection: 'column',
+                        alignItems: 'center', textAlign: 'center', borderRight: '1px solid #f0f0f0',
+                        textDecoration: 'none', transition: 'background 0.15s' }}
+                      onMouseEnter={e => e.currentTarget.style.background = '#f9fafb'}
+                      onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+                      <div style={{ width: 90, height: 90, borderRadius: 10, overflow: 'hidden',
+                        marginBottom: 10, background: '#f3f4f6', flexShrink: 0 }}>
+                        <OptimizedImage
+                          src={item.image}
+                          alt={item.name}
+                          optWidth={180}
+                          style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block' }}
+                        />
+                      </div>
+                      <span style={{ fontSize: 12, fontWeight: 600, color: '#333', marginBottom: 8,
+                        lineHeight: 1.3, display: '-webkit-box', WebkitLineClamp: 2,
+                        WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                        {item.name}
+                      </span>
+                      {discount && (
+                        <span style={{ fontSize: 11, fontWeight: 700, color: '#ef4444', background: '#fef2f2',
+                          padding: '2px 10px', borderRadius: 99, border: '1px solid #fee2e2' }}>
+                          -{discount}%
+                        </span>
+                      )}
+                    </Link>
+                  );
+                })}
               </div>
             </div>
           </div>
@@ -616,11 +534,11 @@ useEffect(() => {
           <div style={{ display: "flex", minHeight: 220 }}>
             {/* Left banner */}
             <div style={{ width: 200, flexShrink: 0, position: "relative" }} className="hidden sm:block">
-              <img
-                src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=400&q=80&fit=crop&auto=format"
+              <OptimizedImage
+                src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc"
                 alt="Home interiors"
+                optWidth={400}
                 style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", display: "block" }}
-                onError={onImgError}
               />
               <div
                 style={{
@@ -657,69 +575,37 @@ useEffect(() => {
               </div>
             </div>
 
-            {/* Items grid — 4 cols on ≥md, 2 cols on small */}
+            {/* Items grid */}
             <div style={{ flex: 1, display: "grid", minWidth: 0, gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))" }}>
               {homeItems.map((item, i) => (
-  <Link key={i} to={`/product/${item._id}`}
-    style={{ padding: '14px 16px', display: 'flex', alignItems: 'center',
-      justifyContent: 'space-between', gap: 10,
-      borderBottom: i < homeItems.length - 4 ? '1px solid #f0f0f0' : 'none',
-      borderRight: '1px solid #f0f0f0',
-      textDecoration: 'none', transition: 'background 0.15s' }}
-    onMouseEnter={e => e.currentTarget.style.background = '#f9fafb'}
-    onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
-    <div style={{ minWidth: 0 }}>
-      <p style={{ fontSize: 13, fontWeight: 500, color: '#333',
-        overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-        {item.name}
-      </p>
-      <p style={{ fontSize: 11, color: '#aaa', marginTop: 3 }}>
-        From {symbol}{convert(item.price)}
-      </p>
-    </div>
-    <div style={{ width: 52, height: 52, borderRadius: 8, overflow: 'hidden',
-      flexShrink: 0, background: '#f5f5f5' }}>
-      <img src={item.image} alt={item.name}
-        style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-        onError={onImgError} />
-    </div>
-  </Link>
-))}
-              
-              {/* {HOME_ITEMS.map((item, i) => (
-                <Link
-                  key={i}
-                  to="/products"
-                  style={{
-                    padding: "14px 16px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    gap: 10,
-                    borderBottom: i < HOME_ITEMS.length - 4 ? "1px solid #f0f0f0" : "none",
-                    borderRight: "1px solid #f0f0f0",
-                    textDecoration: "none",
-                    transition: "background 0.15s",
-                  }}
-                  onMouseEnter={(e) => (e.currentTarget.style.background = "#f9fafb")}
-                  onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
-                >
+                <Link key={item._id} to={`/product/${item._id}`}
+                  style={{ padding: '14px 16px', display: 'flex', alignItems: 'center',
+                    justifyContent: 'space-between', gap: 10,
+                    borderBottom: i < homeItems.length - 4 ? '1px solid #f0f0f0' : 'none',
+                    borderRight: '1px solid #f0f0f0',
+                    textDecoration: 'none', transition: 'background 0.15s' }}
+                  onMouseEnter={e => e.currentTarget.style.background = '#f9fafb'}
+                  onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
                   <div style={{ minWidth: 0 }}>
-                    <p style={{ fontSize: 13, fontWeight: 500, color: "#333", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    <p style={{ fontSize: 13, fontWeight: 500, color: '#333',
+                      overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {item.name}
                     </p>
-                    <p style={{ fontSize: 11, color: "#aaa", marginTop: 3 }}>From USD {item.price}</p>
+                    <p style={{ fontSize: 11, color: '#aaa', marginTop: 3 }}>
+                      From {symbol}{convert(item.price)}
+                    </p>
                   </div>
-                  <div style={{ width: 52, height: 52, borderRadius: 8, overflow: "hidden", flexShrink: 0, background: "#f5f5f5" }}>
-                    <img
-                      src={item.img}
+                  <div style={{ width: 52, height: 52, borderRadius: 8, overflow: 'hidden',
+                    flexShrink: 0, background: '#f5f5f5' }}>
+                    <OptimizedImage
+                      src={item.image}
                       alt={item.name}
-                      style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
-                      onError={onImgError}
+                      optWidth={120}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
                     />
                   </div>
                 </Link>
-              ))} */}
+              ))}
             </div>
           </div>
         </section>
@@ -800,7 +686,6 @@ useEffect(() => {
             overflow: "hidden",
           }}
         >
-          {/* grid watermark */}
           <div
             style={{
               position: "absolute",
@@ -921,11 +806,11 @@ useEffect(() => {
         <section>
           <h3 style={{ fontSize: 18, fontWeight: 700, color: "#111", marginBottom: 16 }}>Our extra services</h3>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 16 }}>
-            {SERVICES.map((s, i) => {
+            {SERVICES.map((s) => {
               const Icon = s.icon;
               return (
                 <div
-                  key={i}
+                  key={s.title}
                   style={{
                     background: "#fff",
                     borderRadius: 16,
@@ -944,13 +829,13 @@ useEffect(() => {
                   }}
                 >
                   <div style={{ height: 140, overflow: "hidden" }}>
-                    <img
+                    <OptimizedImage
                       src={s.img}
                       alt={s.title}
+                      optWidth={400}
                       style={{ width: "100%", height: "100%", objectFit: "cover", display: "block", transition: "transform 0.5s" }}
                       onMouseEnter={(e) => (e.target.style.transform = "scale(1.05)")}
                       onMouseLeave={(e) => (e.target.style.transform = "scale(1)")}
-                      onError={onImgError}
                     />
                   </div>
                   <div style={{ padding: "18px 16px 14px", position: "relative" }}>
